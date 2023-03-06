@@ -11,27 +11,34 @@
 </head>
 <body>
 <!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid" style="margin-left: 1%">
-        <span class="navbar-brand">TBA</span>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href={% url 'home' %}>Pay App</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                {% if user.is_authenticated %}
+                {% if request.user.is_authenticated and request.user.is_staff %}
                     <li class="nav-item">
-                        <a class="nav-link" href={% url 'home' %}>Home</a>
+                        <a class="nav-link" href="{% url 'accounts' %}">Accounts</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'add_comment' %}">Add Comment</a>
+                        <a class="nav-link" href="{% url 'transactions' %}">Transactions</a>
+                    </li>
+                {% elif request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'send_payment' %}">Send Payment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'comment_list' %}">Comment List</a>
+                        <a class="nav-link" href="{% url 'request_payment' %}">Request Payment</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout_user' %}">Logout</a>
+                        <a class="nav-link" href="{% url 'requests' %}">Requests</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'history' %}">History</a>
                     </li>
                 {% else %}
                     <li class="nav-item">
@@ -41,11 +48,15 @@
                         <a class="nav-link" href="{% url 'register_user' %}">Create an account</a>
                     </li>
                 {% endif %}
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout_user' %}">Logout</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
-    </div>
 </nav>
-<div class="container" style="margin-top: 40px;">
+<div class="container main-container">
     {% block content %}
     {% endblock %}
 </div>

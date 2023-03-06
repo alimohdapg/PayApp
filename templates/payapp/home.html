@@ -1,0 +1,11 @@
+{% extends 'base.html' %} <!-- Add this for inheritance -->
+{% block title %}Pay App Home{% endblock %}
+{% block content %}
+    {% if request.user.is_authenticated %}
+        Hi {{ request.user.first_name }}, Welcome back to Pay App!
+    {% else %}
+        Welcome to Pay App!<br><br>
+        Already have an account? Login <a href={% url 'login_user' %}>here</a>.<br><br>
+        New user? Signup <a href={% url 'register_user' %}>here</a>.
+    {% endif %}
+{% endblock %}
