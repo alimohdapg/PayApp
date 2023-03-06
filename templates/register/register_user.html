@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+{% block title %}Registration{% endblock %}
+{% block content %}
+    <h1 class="main-header">Register</h1>
+    <form action="{% url 'register_user' %}" method="post">
+        {% csrf_token %}
+        {{ register_user | crispy }}
+        <button class="btn btn-primary" type="submit">Signup</button>
+    </form>
+    {% if failed_signup %}
+        <div class="alert alert-danger" role="alert" style="margin-top: 20px">
+            Invalid signup details!
+        </div>
+    {% endif %}
+{% endblock %}
