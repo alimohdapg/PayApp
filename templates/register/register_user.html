@@ -5,7 +5,8 @@
     <h1 class="main-header">Register</h1>
     <form action="{% url 'register_user' %}" method="post">
         {% csrf_token %}
-        {{ register_user | crispy }}
+        {{ register_form | crispy }}
+        {{ account_form | crispy }}
         <button class="btn btn-primary" type="submit">Signup</button>
     </form>
     {% if failed_signup %}

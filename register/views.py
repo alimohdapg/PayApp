@@ -1,27 +1,30 @@
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
+from payapp.forms import AccountForm
 
 
 def register_user(request):
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = User.objects.create_user(username=form.cleaned_data['username'], email=form.cleaned_data['email'],
-                                            password=form.cleaned_data['password1'],
-                                            first_name=form.cleaned_data['first_name'],
-                                            last_name=form.cleaned_data['last_name'])
-            user.save()
+        register_form = RegisterForm(request.POST)
+        account_form = AccountForm(request.POST)
+        if register_form.is_valid():
+            user = register_form.save()
+            account = account_form.save(commit=False)
+            account.user = user
+            account.save()
             login(request, user)
             return redirect('home')
         else:
-            return render(request, 'register/register_user.html', {'failed_signup': True, 'register_user': form})
+            return render(request, 'register/register_user.html',
+                          {'failed_signup': True, 'register_form': register_form, 'account_form': account_form})
     else:
-        form = RegisterForm()
-    return render(request, 'register/register_user.html', {'register_user': form})
+        register_form = RegisterForm()
+        account_form = AccountForm()
+    return render(request, 'register/register_user.html',
+                  {'register_form': register_form, 'account_form': account_form})
 
 
 def login_user(request):
