@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_filters %}
+{% block title %}Request Payment{% endblock %}
+{% block content %}
+    <h1 class="main-header">Request Payment</h1>
+    <form action="{% url 'request_payment' %}" method="post">
+        {% csrf_token %}
+        {{ payment_form | crispy }}
+        <button class="btn btn-primary" type="submit">Request Payment</button>
+    </form>
+    {% if request_sent %}
+        <div class="alert alert-success bottom-alert" role="alert">
+            Request Sent!
+        </div>
+    {% endif %}
+{% endblock %}

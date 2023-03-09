@@ -10,7 +10,7 @@ def register_user(request):
     if request.method == 'POST':
         register_form = RegisterForm(request.POST)
         account_form = AccountForm(request.POST)
-        if register_form.is_valid():
+        if register_form.is_valid() and account_form.is_valid():
             user = register_form.save()
             account = account_form.save(commit=False)
             account.user = user

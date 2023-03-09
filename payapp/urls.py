@@ -7,6 +7,8 @@ urlpatterns = [
     path('request_payment', views.request_payment, name="request_payment"),
     path('requests', views.requests, name="requests"),
     path('history', views.history, name="history"),
+    path('delete_request', views.delete_request, name="delete_request"),
+    path('accept_request', views.accept_request, name="accept_request"),
     path('accounts', views.accounts, name="accounts"),
     path('transactions', views.transactions, name="transactions"),
 ]
