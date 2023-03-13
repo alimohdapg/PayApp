@@ -7,6 +7,7 @@ services:
   - type: web
     name: webapps2023
     env: python
+    plan: free
     buildCommand: "./build.sh"
     startCommand: "gunicorn webapps2023.wsgi:application"
     envVars:
