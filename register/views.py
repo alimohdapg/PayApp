@@ -4,6 +4,29 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from payapp.forms import AccountForm
+from django.contrib.admin.views.decorators import staff_member_required
+
+
+@staff_member_required
+def register_admin(request):
+    if request.method == 'POST':
+        register_form = RegisterForm(request.POST)
+        account_form = AccountForm(request.POST)
+        if register_form.is_valid() and account_form.is_valid():
+            user = register_form.save()
+            account = account_form.save(commit=False)
+            account.user = user
+            account.save()
+            login(request, user)
+            return redirect('home')
+        else:
+            return render(request, 'register/register_user.html',
+                          {'failed_signup': True, 'register_form': register_form, 'account_form': account_form})
+    else:
+        register_form = RegisterForm()
+        account_form = AccountForm()
+    return render(request, 'register/register_user.html',
+                  {'register_form': register_form, 'account_form': account_form})
 
 
 def register_user(request):

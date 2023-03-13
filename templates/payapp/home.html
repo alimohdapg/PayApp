@@ -3,7 +3,9 @@
 {% block content %}
     {% if request.user.is_authenticated %}
         Hi {{ request.user.first_name }}, Welcome back to Pay App!<br><br>
-        Current Balance: {{ balance }}
+        {% if not request.user.is_staff %}
+            Current Balance: {{ balance }}
+        {% endif %}
     {% else %}
         Welcome to Pay App!<br><br>
         Already have an account? Login <a href={% url 'login_user' %}>here</a>.<br><br>
