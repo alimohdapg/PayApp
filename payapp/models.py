@@ -34,8 +34,16 @@ class Account(models.Model):
         super(Account, self).save(*args, **kwargs)
 
 
-class Transaction(models.Model):
-    sender = models.ForeignKey(Account, on_delete=models.CASCADE,related_name='sender')
+class TimeStampedModel(models.Model):
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class Transaction(TimeStampedModel):
+    sender = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='receiver')
     amount = models.FloatField()
     request = models.BooleanField(default=False)

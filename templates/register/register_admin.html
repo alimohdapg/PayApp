@@ -1,17 +1,21 @@
 {% extends 'base.html' %}
 {% load crispy_forms_filters %}
-{% block title %}User Registration{% endblock %}
+{% block title %}Admin Registration{% endblock %}
 {% block content %}
-    <h1 class="main-header">Register User</h1>
-    <form action="{% url 'register_user' %}" method="post">
+    <h1 class="main-header">Register Admin</h1>
+    <form action="{% url 'register_admin' %}" method="post">
         {% csrf_token %}
         {{ register_form | crispy }}
-        {{ account_form | crispy }}
         <button class="btn btn-primary" type="submit">Register</button>
     </form>
     {% if failed_signup %}
         <div class="alert alert-danger bottom-alert" role="alert">
             Invalid signup details!
+        </div>
+    {% endif %}
+    {% if admin_created %}
+        <div class="alert alert-success bottom-alert" role="alert">
+            Admin registered!
         </div>
     {% endif %}
 {% endblock %}

@@ -1,15 +1,18 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+
 from payapp.forms import PaymentForm
 from payapp.models import Account, convert_currency, Transaction
-from django.contrib.admin.views.decorators import staff_member_required
 
 
 def home(request):
     if request.user.is_authenticated:
+        if request.user.is_staff:
+            return render(request, 'payapp/home.html')
         account = Account.objects.get(user=request.user)
         if account.currency == 'USD':
             currency_sign = '$'
@@ -21,6 +24,7 @@ def home(request):
     return render(request, 'payapp/home.html')
 
 
+@user_passes_test(lambda u: not u.is_staff, login_url=reverse_lazy('logout_user'))
 @transaction.atomic
 @login_required(login_url='/register/login_user')
 def send_payment(request):
@@ -49,6 +53,7 @@ def send_payment(request):
     return render(request, 'payapp/send_payment.html', {'payment_form': payment_form})
 
 
+@user_passes_test(lambda u: not u.is_staff, login_url=reverse_lazy('logout_user'))
 @transaction.atomic
 @login_required(login_url='/register/login_user')
 def request_payment(request):
@@ -70,15 +75,18 @@ def request_payment(request):
     return render(request, 'payapp/request_payment.html', {'payment_form': payment_form})
 
 
+@user_passes_test(lambda u: not u.is_staff, login_url=reverse_lazy('logout_user'))
 @login_required(login_url='/register/login_user')
 def requests(request):
-    sent_requests = list(Transaction.objects.filter(sender=request.user.account, request=True))
-    received_requests = list(Transaction.objects.filter(receiver=request.user.account, request=True))
+    sent_requests = list(Transaction.objects.filter(sender=request.user.account, request=True).order_by('-modified'))
+    received_requests = list(
+        Transaction.objects.filter(receiver=request.user.account, request=True).order_by('-modified'))
     return render(request, 'payapp/requests.html',
                   {'sent_requests': sent_requests, 'received_requests': received_requests,
                    'insufficient_balance_id': request.session.get('insufficient_balance_id', -1)})
 
 
+@user_passes_test(lambda u: not u.is_staff, login_url=reverse_lazy('logout_user'))
 @transaction.atomic
 @login_required(login_url='/register/login_user')
 def delete_request(request):
@@ -88,6 +96,7 @@ def delete_request(request):
     return redirect('requests')
 
 
+@user_passes_test(lambda u: not u.is_staff, login_url=reverse_lazy('logout_user'))
 @transaction.atomic
 @login_required(login_url='/register/login_user')
 def accept_request(request):
@@ -107,23 +116,25 @@ def accept_request(request):
     return redirect('requests')
 
 
+@user_passes_test(lambda u: not u.is_staff, login_url=reverse_lazy('logout_user'))
 @login_required(login_url='/register/login_user')
 def history(request):
     transaction_history = list(
         Transaction.objects.filter(
-            (Q(sender=request.user.account) | Q(receiver=request.user.account)) & Q(request=False)))
+            (Q(sender=request.user.account) | Q(receiver=request.user.account)) & Q(request=False)
+        ).order_by('-modified'))
     return render(request, 'payapp/history.html', {'transaction_history': transaction_history})
 
 
-#@staff_member_required
+@user_passes_test(lambda u: u.is_staff, login_url=reverse_lazy('logout_user'))
 @login_required(login_url='/register/login_user')
 def accounts(request):
-    user_accounts = list(Account.objects.all())
-    return render(request, 'payapp/accounts.html', {'user_accounts': user_accounts})
+    users = list(User.objects.all())
+    return render(request, 'payapp/accounts.html', {'users': users})
 
 
-#@staff_member_required
+@user_passes_test(lambda u: u.is_staff, login_url=reverse_lazy('logout_user'))
 @login_required(login_url='/register/login_user')
 def transactions(request):
-    transaction_history = list(Transaction.objects.filter(request=False))
+    transaction_history = list(Transaction.objects.filter(request=False).order_by('-modified'))
     return render(request, 'payapp/transactions.html', {'transaction_history': transaction_history})
