@@ -90,8 +90,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.webapps',
     },
     'production': dj_database_url.config(
-        # Feel free to alter this value to suit your needs.
-        default='postgresql://postgres:postgres@localhost:5432/webapps2023',
+        default=os.environ.get('DATABASE_URL'),
         conn_max_age=600
     )
 }
