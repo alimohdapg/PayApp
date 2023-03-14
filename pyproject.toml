@@ -6,7 +6,7 @@ authors = ["alimohdapg"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.10.0"
 crispy-bootstrap5 = "0.7"
 django = "4.1.7"
 django-crispy-forms = "2.0"
