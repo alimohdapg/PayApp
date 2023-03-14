@@ -2,6 +2,7 @@ databases:
   - name: webapps2023
     databaseName: webapps2023
     user: webapps2023
+    plan: free
 
 services:
   - type: web
