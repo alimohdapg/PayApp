@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 import requests as req
+import os
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 currencies = (('GBP', 'GBP'), ('USD', 'USD'), ('EUR', 'EUR'))
 
@@ -15,7 +20,8 @@ class Account(models.Model):
         if self.balance is None:
             initial_balance = 1000
             params = {'currency1': 'GBP', 'currency2': self.currency, 'amount': initial_balance}
-            self.balance = req.get('http://127.0.0.1:8000/payapp/convert-currency', params=params).json()['amount']
+            self.balance = req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency',
+                                   params=params).json()['amount']
         super(Account, self).save(*args, **kwargs)
 
 

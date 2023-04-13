@@ -69,8 +69,9 @@ def send_payment(request):
             receiver = User.objects.get(email__exact=payment_form.cleaned_data['recipient_email']).account
             sender.balance -= new_transaction.amount
             params = {'currency1': sender.currency, 'currency2': receiver.currency, 'amount': new_transaction.amount}
-            print(os.environ.get("SERVER_URL", default=env("SERVER_URL")))
-            receiver.balance -= req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency', params=params).json()['amount']
+            receiver.balance -= \
+                req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency',
+                        params=params).json()['amount']
             sender.save()
             receiver.save()
             new_transaction.sender = sender
@@ -136,7 +137,9 @@ def accept_request(request):
     new_transaction = Transaction.objects.get(pk=request_id)
     params = {'currency1': new_transaction.sender.currency, 'currency2': new_transaction.receiver.currency,
               'amount': new_transaction.amount}
-    converted_amount = req.get('https://127.0.0.1:8000/payapp/convert-currency', params=params).json()['amount']
+    converted_amount = \
+        req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency',
+                params=params).json()['amount']
     if new_transaction.receiver.balance < converted_amount:
         request.session['insufficient_balance_id'] = request_id
         return redirect('requests')
