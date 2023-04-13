@@ -9,6 +9,11 @@ from rest_framework.views import APIView
 from payapp.forms import PaymentForm
 from payapp.models import Account, Transaction
 import requests as req
+import os
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 
 # noinspection PyMethodMayBeStatic
@@ -64,7 +69,8 @@ def send_payment(request):
             receiver = User.objects.get(email__exact=payment_form.cleaned_data['recipient_email']).account
             sender.balance -= new_transaction.amount
             params = {'currency1': sender.currency, 'currency2': receiver.currency, 'amount': new_transaction.amount}
-            receiver.balance -= req.get('https://127.0.0.1:8000/payapp/convert-currency', params=params).json()['amount']
+            print(os.environ.get("SERVER_URL", default=env("SERVER_URL")))
+            receiver.balance -= req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency', params=params).json()['amount']
             sender.save()
             receiver.save()
             new_transaction.sender = sender
