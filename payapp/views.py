@@ -4,9 +4,34 @@ from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from payapp.forms import PaymentForm
-from payapp.models import Account, convert_currency, Transaction
+from payapp.models import Account, Transaction
+import requests as req
+
+
+# noinspection PyMethodMayBeStatic
+class ConvertCurrency(APIView):
+
+    def get(self, request):
+        currency1 = request.query_params.get('currency1')
+        currency2 = request.query_params.get('currency2')
+        amount = float(request.query_params.get('amount'))
+        if currency1 == currency2:
+            return Response({'amount': amount})
+        if currency1 == 'GBP' and currency2 == 'USD':
+            return Response({'amount': amount * 1.18})
+        if currency1 == 'GBP' and currency2 == 'EUR':
+            return Response({'amount': amount * 1.12})
+        if currency1 == 'USD' and currency2 == 'GBP':
+            return Response({'amount': amount * 0.85})
+        if currency1 == 'USD' and currency2 == 'EUR':
+            return Response({'amount': amount * 0.95})
+        if currency1 == 'EUR' and currency2 == 'GBP':
+            return Response({'amount': amount * 0.89})
+        if currency1 == 'EUR' and currency2 == 'USD':
+            return Response({'amount': amount * 1.05})
 
 
 def home(request):
@@ -38,7 +63,8 @@ def send_payment(request):
                 return render(request, 'payapp/send_payment.html', {'payment_form': payment_form})
             receiver = User.objects.get(email__exact=payment_form.cleaned_data['recipient_email']).account
             sender.balance -= new_transaction.amount
-            receiver.balance += convert_currency(sender.currency, receiver.currency, new_transaction.amount)
+            params = {'currency1': sender.currency, 'currency2': receiver.currency, 'amount': new_transaction.amount}
+            receiver.balance -= req.get('http://127.0.0.1:8000/payapp/convert-currency', params=params).json()['amount']
             sender.save()
             receiver.save()
             new_transaction.sender = sender
@@ -102,8 +128,9 @@ def delete_request(request):
 def accept_request(request):
     request_id = request.GET["request_id"]
     new_transaction = Transaction.objects.get(pk=request_id)
-    converted_amount = convert_currency(new_transaction.sender.currency, new_transaction.receiver.currency,
-                                        new_transaction.amount)
+    params = {'currency1': new_transaction.sender.currency, 'currency2': new_transaction.receiver.currency,
+              'amount': new_transaction.amount}
+    converted_amount = req.get('http://127.0.0.1:8000/payapp/convert-currency', params=params).json()['amount']
     if new_transaction.receiver.balance < converted_amount:
         request.session['insufficient_balance_id'] = request_id
         return redirect('requests')
