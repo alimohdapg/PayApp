@@ -66,7 +66,11 @@ def send_payment(request):
             if sender.balance < new_transaction.amount:
                 payment_form.add_error('amount', 'Insufficient balance')
                 return render(request, 'payapp/send_payment.html', {'payment_form': payment_form})
-            receiver = User.objects.get(email__exact=payment_form.cleaned_data['recipient_email']).account
+            receiver_user = User.objects.get(email__exact=payment_form.cleaned_data['recipient_email'])
+            if receiver_user.is_staff:
+                payment_form.add_error('email', 'Invalid email address')
+                return render(request, 'payapp/send_payment.html', {'payment_form': payment_form})
+            receiver = receiver_user.account
             sender.balance -= new_transaction.amount
             params = {'currency1': sender.currency, 'currency2': receiver.currency, 'amount': new_transaction.amount}
             receiver.balance -= \
@@ -96,8 +100,11 @@ def request_payment(request):
             new_transaction = payment_form.save(commit=False)
             new_transaction.request = True
             new_transaction.sender = request.user.account
-            new_transaction.receiver = User.objects.get(
-                email__exact=payment_form.cleaned_data['recipient_email']).account
+            receiver_user = User.objects.get(email__exact=payment_form.cleaned_data['recipient_email'])
+            if receiver_user.is_staff:
+                payment_form.add_error('email', 'Invalid email address')
+                return render(request, 'payapp/request_payment.html', {'payment_form': payment_form})
+            new_transaction.receiver = receiver_user.account
             new_transaction.save()
             return render(request, 'payapp/request_payment.html',
                           {'request_sent': True, 'payment_form': payment_form})
