@@ -131,8 +131,7 @@ def requests(request):
 @login_required(login_url='/register/login_user')
 def delete_request(request):
     new_transaction = Transaction.objects.get(pk=request.GET["request_id"])
-    new_transaction.request = False
-    new_transaction.save()
+    new_transaction.delete()
     return redirect('requests')
 
 
