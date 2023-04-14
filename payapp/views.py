@@ -130,8 +130,7 @@ def requests(request):
 @transaction.atomic
 @login_required(login_url='/register/login_user')
 def delete_request(request):
-    new_transaction = Transaction.objects.get(pk=request.GET["request_id"])
-    new_transaction.delete()
+    Transaction.objects.get(pk=request.GET["request_id"]).delete()
     return redirect('requests')
 
 
