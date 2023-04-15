@@ -121,9 +121,12 @@ def requests(request):
     sent_requests = list(Transaction.objects.filter(sender=request.user.account, request=True).order_by('-modified'))
     received_requests = list(
         Transaction.objects.filter(receiver=request.user.account, request=True).order_by('-modified'))
+    insufficient_balance_id = int(request.session.get('insufficient_balance_id', -1))
+    if insufficient_balance_id != -1:
+        del request.session['insufficient_balance_id']
     return render(request, 'payapp/requests.html',
                   {'sent_requests': sent_requests, 'received_requests': received_requests,
-                   'insufficient_balance_id': request.session.get('insufficient_balance_id', -1)})
+                   'insufficient_balance_id': insufficient_balance_id})
 
 
 @user_passes_test(lambda u: not u.is_staff, login_url=reverse_lazy('logout_user'))
