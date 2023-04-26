@@ -73,7 +73,7 @@ def send_payment(request):
             receiver = receiver_user.account
             sender.balance -= new_transaction.amount
             params = {'currency1': sender.currency, 'currency2': receiver.currency, 'amount': new_transaction.amount}
-            receiver.balance -= \
+            receiver.balance += \
                 req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency',
                         params=params).json()['amount']
             sender.save()
