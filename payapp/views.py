@@ -19,10 +19,8 @@ environ.Env.read_env()
 # noinspection PyMethodMayBeStatic
 class ConvertCurrency(APIView):
 
-    def get(self, request):
-        currency1 = request.query_params.get('currency1')
-        currency2 = request.query_params.get('currency2')
-        amount = float(request.query_params.get('amount'))
+    def get(self, request, currency1, currency2, amount):
+        amount = float(amount)
         if currency1 == currency2:
             return Response({'amount': amount})
         if currency1 == 'GBP' and currency2 == 'USD':
@@ -72,10 +70,9 @@ def send_payment(request):
                 return render(request, 'payapp/send_payment.html', {'payment_form': payment_form})
             receiver = receiver_user.account
             sender.balance -= new_transaction.amount
-            params = {'currency1': sender.currency, 'currency2': receiver.currency, 'amount': new_transaction.amount}
             receiver.balance += \
-                req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency',
-                        params=params).json()['amount']
+                req.get(
+                    f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency/{sender.currency}/{receiver.currency}/{new_transaction.amount}').json()['amount']
             sender.save()
             receiver.save()
             new_transaction.sender = sender
@@ -143,11 +140,9 @@ def delete_request(request):
 def accept_request(request):
     request_id = request.GET["request_id"]
     new_transaction = Transaction.objects.get(pk=request_id)
-    params = {'currency1': new_transaction.sender.currency, 'currency2': new_transaction.receiver.currency,
-              'amount': new_transaction.amount}
     converted_amount = \
-        req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency',
-                params=params).json()['amount']
+        req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency/'
+                f'{new_transaction.sender.currency}/{new_transaction.receiver.currency}/{new_transaction.amount}').json()['amount']
     if new_transaction.receiver.balance < converted_amount:
         request.session['insufficient_balance_id'] = request_id
         return redirect('requests')

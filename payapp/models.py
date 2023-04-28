@@ -19,9 +19,9 @@ class Account(models.Model):
         # initial balance is in GBP
         if self.balance is None:
             initial_balance = 1000
-            params = {'currency1': 'GBP', 'currency2': self.currency, 'amount': initial_balance}
-            self.balance = req.get(f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency',
-                                   params=params).json()['amount']
+            self.balance = req.get(
+                f'{os.environ.get("SERVER_URL", default=env("SERVER_URL"))}/payapp/convert-currency/'
+                f'GBP/{self.currency}/{initial_balance}').json()['amount']
         super(Account, self).save(*args, **kwargs)
 
 

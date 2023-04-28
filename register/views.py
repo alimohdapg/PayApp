@@ -1,6 +1,7 @@
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
+from django.db import transaction
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from .forms import RegisterForm
@@ -27,6 +28,7 @@ def register_admin(request):
                   {'register_form': register_form})
 
 
+@transaction.atomic
 def register_user(request):
     if request.method == 'POST':
         register_form = RegisterForm(request.POST)
