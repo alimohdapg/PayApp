@@ -3,7 +3,6 @@ from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
-    path('convert-currency/<currency1>/<currency2>/<amount>', views.ConvertCurrency.as_view(), name="convert-currency"),
     path('home', views.home, name="home"),
     path('send_payment', views.send_payment, name="send_payment"),
     path('request_payment', views.request_payment, name="request_payment"),
