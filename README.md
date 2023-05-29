@@ -4,6 +4,10 @@
 
 A web-based, multi-user payment service, essentially a simplified version of PayPal. 
 
+Link to video walkthrough of application: https://youtu.be/SC0tpziKW-E 
+
+Application URL: https://webapps2023.onrender.com/
+
 ## Application Description
 During the registration process, users provide their username, first and last name, email address, and password. Each user has a single online account with a selected currency (GBP, USD, or Euros). The system automatically converts the initial amount based on the chosen currency.
 
