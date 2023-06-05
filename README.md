@@ -11,7 +11,7 @@ Application URL: https://webapps2023.onrender.com/
 ## Application Description
 During the registration process, users provide their username, first and last name, email address, and password. Each user has a single online account with a selected currency (GBP, USD, or Euros). The system automatically converts the initial amount based on the chosen currency.
 
-Registered users can connect their online accounts and perform various transactions, such as transferring money, receiving payments, and managing their account balance. The system assumes users start with a specified amount of money and does not involve connections to real financial sources.
+Registered users can perform various transactions, such as transferring money, receiving payments, and managing their account balance. The system assumes users start with a specified amount of money and does not involve connections to real financial sources.
 
 Users can initiate direct payments to other registered users, and if the request is accepted and funds are sufficient, the money is immediately transferred. Users can also request payments from other users and respond accordingly by rejecting the request or making a payment.
 
