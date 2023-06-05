@@ -13,7 +13,7 @@ During the registration process, users provide their username, first and last na
 
 Registered users can perform various transactions, such as transferring money, receiving payments, and managing their account balance. The system assumes users start with a specified amount of money and does not involve connections to real financial sources.
 
-Users can initiate direct payments to other registered users, and if the request is accepted and funds are sufficient, the money is immediately transferred. Users can also request payments from other users and respond accordingly by rejecting the request or making a payment.
+Users can initiate direct payments to other registered users, and if the request is accepted and funds are sufficient, the money is immediately transferred. Users can also request payments from other users while also being able to respond accordingly to incoming requests by rejecting the request or accepting to send the payment.
 
 The system enables users to view their transaction history, including sent and received payments and payment requests, as well as their current account balance. Administrators have access to all user accounts, transactions, and can register additional administrators.
 
